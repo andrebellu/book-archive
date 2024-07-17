@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
