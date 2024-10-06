@@ -29,16 +29,18 @@
 <div
     class={`h-16 px-4 flex justify-between items-center content-between shadow-xl rounded-md gap-x-4 group hover:scale-110 transition-all duration-300 hover:shadow-2xl cursor-pointer ${
         book.read ? "border-2 border-green-500" : ""
-    }`}
+    } ${book.reading ? "border-2 border-blue-500" : ""}`}
     on:click={handleClick}
 >
     <figure class="w-6">
         <img src={book.cover} alt="cover" />
     </figure>
-    <p class="font-bold md:hidden lg:flex">
-        {book.title}
-    </p>
-    <div class="md:hidden lg:flex lg:flex-row">
-        <p class="truncate">{name} {surname}</p>
+    <div class="md:hidden lg:flex sm:hidden gap-x-4">
+        <p class="font-bold">
+            {book.title}
+        </p>
+        <div class="md:hidden lg:flex lg:flex-row sm:hidden">
+            <p class="truncate">{name} {surname}</p>
+        </div>
     </div>
 </div>

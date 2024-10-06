@@ -3,11 +3,15 @@
     import { onMount } from "svelte";
     import Alert from "./Alert.svelte";
     import { fade } from "svelte/transition";
+    import { v4 as uuidv4 } from "uuid";
+    import { books } from "../../store";
 
     let search = "";
     let filteredAuthors = [];
     let message;
     let success;
+    let readCheckbox;
+    let readingCheckbox;
 
     function filter() {
         filteredAuthors = $authors.filter(
@@ -26,50 +30,87 @@
     async function addBook(e) {
         e.preventDefault();
 
-        const form = e.target;
-        const title = form.elements[0].value;
-        const cover = form.elements[1].value;
-        const description = form.elements[2].value;
-        const author_id = form.elements[3].value;
-        const genre = form.elements[4].value;
-        const read = form.elements[5].checked;
+        const id = uuidv4();
+        const title = document.getElementById("title").value;
+        const cover = document.getElementById("cover").value;
+        const description = document.getElementById("description").value;
+        const author_id = document.getElementById("author").value;
+        const genre = document
+            .getElementById("genre")
+            .value.split(",")
+            .map((g) => g.trim());
+        const read = document.getElementById("read").checked;
+        const reading = document.getElementById("reading").checked;
 
         const data = {
+            id,
             title,
             cover,
             description,
+            read,
+            reading,
             author_id,
             genre,
-            read,
-            created_at: new Date().toISOString(),
         };
 
-        const res = await fetch("/api/add", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
+        $books = [
+            ...$books,
+            {
+                id,
+                title,
+                cover,
+                description,
+                read,
+                reading,
+                author_id,
+                genre,
             },
-            body: JSON.stringify(data),
-        });
+        ];
+        try {
+            const res = await fetch("/api/books/add", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
 
-        const result = await res.json();
+            const result = await res.json();
 
-        if (res.status === 200) {
-            form.reset();
-            message = "Book added successfully!";
-            success = true;
-        } else {
-            console.error("Error adding book:", result);
-            message = result.error;
+            if (res.ok) {
+                document.getElementById("addBookForm").reset();
+                message = "Book added successfully!";
+                success = true;
+            } else {
+                console.error("Error adding book:", result);
+                message =
+                    result.error || "An error occurred while adding the book.";
+                success = false;
+            }
+
+            console.log("Book added:", result);
+            my_modal_3.close();
+        } catch (error) {
+            console.error("Error adding book:", error);
+            message = "An error occurred while adding the book.";
             success = false;
         }
-
-        console.log("Book added:", result);
-        my_modal_3.close();
     }
 
     function clearMessage() {
         message = null;
+    }
+
+    function handleReadChange() {
+        if (readCheckbox.checked) {
+            readingCheckbox.checked = false;
+        }
+    }
+
+    function handleReadingChange() {
+        if (readingCheckbox.checked) {
+            readCheckbox.checked = false;
+        }
     }
 </script>
 
@@ -85,28 +126,38 @@
                 >✕</button
             >
         </form>
-        <form on:submit={addBook}>
+        <form id="addBookForm" on:submit={addBook}>
             <div class="gap-y-4 flex flex-col">
                 <input
                     type="text"
+                    id="title"
                     class="input input-bordered w-full placeholder:text-center"
                     placeholder="Book Title"
+                    required
                 />
 
                 <input
                     type="text"
+                    id="cover"
                     class="input input-bordered w-full placeholder:text-center"
                     placeholder="Cover URL"
+                    required
                 />
 
                 <input
                     type="text"
+                    id="description"
                     class="input input-bordered w-full placeholder:text-center"
                     placeholder="Book Description"
+                    required
                 />
 
                 <div class="dropdown w-full">
-                    <select class="select w-full select-bordered">
+                    <select
+                        id="author"
+                        class="select w-full select-bordered"
+                        required
+                    >
                         <option
                             value=""
                             disabled
@@ -139,13 +190,32 @@
 
                 <input
                     type="text"
+                    id="genre"
                     class="input input-bordered w-full placeholder:text-center"
-                    placeholder="Genre"
+                    placeholder="Genre (comma-separated)"
+                    required
                 />
 
                 <div class="flex items-center content-center !w-full">
                     <label for="read" class="label">Read</label>
-                    <input type="checkbox" checked="checked" class="checkbox" />
+                    <input
+                        id="read"
+                        bind:this={readCheckbox}
+                        type="checkbox"
+                        class="checkbox"
+                        on:change={handleReadChange}
+                    />
+                </div>
+
+                <div class="flex items-center content-center !w-full">
+                    <label for="reading" class="label">Reading</label>
+                    <input
+                        id="reading"
+                        bind:this={readingCheckbox}
+                        type="checkbox"
+                        class="checkbox"
+                        on:change={handleReadingChange}
+                    />
                 </div>
 
                 <button type="submit" class="btn btn-success w-full">

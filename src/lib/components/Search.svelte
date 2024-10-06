@@ -1,4 +1,13 @@
 <script>
+    import { books, filteredBooks } from "../../store.js";
+
+    function handleSearch(e) {
+        filteredBooks.update((books) => {
+            return books.filter((book) =>
+                book.title.toLowerCase().includes(e.target.value.toLowerCase())
+            );
+        });
+    }
 </script>
 
 <button class="btn" onclick="my_modal_2.showModal()">
@@ -12,6 +21,7 @@
         <input
             type="text"
             class="w-full h-full focus:outline-none bg-transparent"
+            on:input={handleSearch}
         />
     </div>
     <form method="dialog" class="modal-backdrop">

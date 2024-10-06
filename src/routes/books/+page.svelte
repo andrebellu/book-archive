@@ -2,8 +2,8 @@
     import { onMount } from "svelte";
     import BookCard from "$lib/components/BookCard.svelte";
     import Add from "$lib/components/Add.svelte";
-    import { books, authors } from "../../store.js";
-    import Filter from "../../lib/components/Filter.svelte";
+    import { books, authors, filteredBooks } from "../../store.js";
+    import Search from "../../lib/components/Search.svelte";
     import BookCardList from "../../lib/components/BookCardList.svelte";
     export let data;
 
@@ -15,17 +15,30 @@
 
     function setVariables() {
         books.set(data.books);
+
+        filteredBooks.set(data.books);
+
+        books.update((books) => {
+            return books.sort((a, b) => {
+                if (!a.read && b.read) return -1;
+                if (a.reading && !b.reading) return -1;
+                return 0;
+            });
+        });
+
         authors.set(data.authors);
     }
 
     async function handleList() {
         list = !list;
     }
+
+    $: $books = $books;
 </script>
 
 <body class="flex flex-col items-center no-scroll">
     <div class="flex flex-row-reverse items-center gap-4 p-10">
-        <Filter />
+        <Search />
         <button class="btn btn-gray hover:bg w-32" on:click={handleList}>
             {list ? "Grid" : "List"}
         </button>
@@ -40,7 +53,7 @@
         </div>
     {:else}
         <div class="flex justify-center items-center flex-wrap gap-10 px-10">
-            {#each $books as book}
+            {#each $filteredBooks as book}
                 <BookCard {book} />
             {/each}
         </div>

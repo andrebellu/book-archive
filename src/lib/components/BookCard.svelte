@@ -25,7 +25,7 @@
 
 <div class="tooltip tooltip-bottom" data-tip={book.description}>
     <div
-        class={`card card-side bg-base-100 shadow-xl w-96 max-w-96 cursor-pointer group hover:scale-110 transition-all duration-300 hover:shadow-2xl ${book.read ? "border-2 border-green-500" : ""}`}
+        class={`card card-side bg-base-100 shadow-xl w-96 max-w-96 cursor-pointer group hover:scale-110 transition-all duration-300 hover:shadow-2xl ${book.read ? "border-2 border-green-500" : ""} ${book.reading ? "border-2 border-blue-500" : ""}`}
         on:click={handleClick}
     >
         <figure>
