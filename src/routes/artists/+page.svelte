@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import ArtistCard from "$lib/components/Artists/ArtistCard.svelte";
-  import Add from "../../lib/components/Artists/Add.svelte";
+  import Add from "$lib/components/Artists/Add.svelte";
   import { authors } from "../../store.js";
   export let data;
 

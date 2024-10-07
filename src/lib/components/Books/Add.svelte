@@ -1,9 +1,9 @@
 <script>
-  import { authors } from "../../store";
+  import { authors } from "../../../store";
   import { onMount } from "svelte";
   import Alert from "./Alert.svelte";
   import { v4 as uuidv4 } from "uuid";
-  import { books } from "../../store";
+  import { books } from "../../../store";
 
   let search = "";
   let filteredAuthors = [];
@@ -121,12 +121,12 @@
   function selectAuthor(author) {
     selectedAuthor = author;
     search = `${author.name} ${author.surname}`;
-    filteredAuthors = []; // Clear the dropdown after selection
+    filteredAuthors = [];
   }
 </script>
 
 <button class="btn btn-success hover:bg w-32" onclick="my_modal_3.showModal()">
-  Add book
+  Add a book
 </button>
 
 <dialog id="my_modal_3" class="modal">
