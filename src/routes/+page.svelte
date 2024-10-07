@@ -27,7 +27,7 @@
     <div class="flex flex-col justify-center items-center gap-y-5 p-6">
         <span class="opacity-75">Enter the book archive</span>
         <a href="/books" class="category"
-            ><span class="material-symbols-outlined text-4xl">
+            ><span class="material-symbols-outlined text-4xl animate-pulse">
                 arrow_forward
             </span></a
         >
