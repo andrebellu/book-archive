@@ -129,7 +129,7 @@
   Add a book
 </button>
 
-<dialog id="my_modal_3" class="modal">
+<dialog id="my_modal_3" class="modal backdrop-blur-sm">
   <div class="modal-box p-10">
     <form method="dialog">
       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
@@ -137,6 +137,13 @@
       >
     </form>
     <form id="addBookForm" on:submit={addBook}>
+      <div class="preview">
+        <img
+          src="https://picsum.photos/200/300"
+          alt="Book cover"
+          class="rounded-lg"
+        />
+      </div>
       <div class="gap-y-4 flex flex-col">
         <input
           type="text"

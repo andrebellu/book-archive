@@ -47,14 +47,17 @@
 </script>
 
 <!-- Button to open the modal -->
-<button class="btn btn-success hover:bg w-32" on:click={toggleModal}>
+<button
+  class="btn btn-success hover:bg w-32 hidden lg:block"
+  on:click={toggleModal}
+>
   Add more books
 </button>
 
 <!-- Modal for adding multiple books -->
 {#if isOpen}
-  <div class="modal modal-open">
-    <div class="modal-box modal-lg">
+  <div class="modal modal-open backdrop-blur-sm">
+    <div class="modal-box w-full max-w-6xl p-8 md:p-10">
       <button
         class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
         on:click={toggleModal}>✕</button
@@ -63,7 +66,7 @@
 
       <form on:submit|preventDefault={handleAddBooks}>
         {#each newBooks as book, index}
-          <div class="mb-2 flex items-center gap-2">
+          <div class="mb-2 flex items-center gap-2 flex-wrap">
             <!-- Single line with flexbox for book inputs -->
             <input
               type="text"
@@ -97,7 +100,9 @@
               type="number"
               placeholder="Year"
               bind:value={book.year}
-              class="input input-bordered w-1/5"
+              class="input input-bordered w-28"
+              min="0"
+              max={new Date().getFullYear()}
               required
             />
 
@@ -110,16 +115,21 @@
             />
 
             <!-- Remove button for each row -->
-
-            <button class="btn btn-error" on:click={() => removeRow(index)}
-              ><span class="material-symbols-outlined"> delete </span></button
-            >
+            {#if index > 0}
+              <button class="btn btn-error" on:click={() => removeRow(index)}
+                ><span class="material-symbols-outlined"> delete </span></button
+              >
+            {:else}
+              <button class="btn btn-error" disabled
+                ><span class="material-symbols-outlined"> delete </span></button
+              >
+            {/if}
           </div>
         {/each}
 
         <!-- Add new row button -->
         <button
-          class="btn btn-primary btn-sm mb-4 w-full"
+          class="btn btn-sm mb-4 w-full btn-outline"
           type="button"
           on:click={addNewRow}>Add Another Book</button
         >
@@ -130,24 +140,3 @@
     </div>
   </div>
 {/if}
-
-<style>
-  .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 50;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.5);
-  }
-  .modal-box.modal-lg {
-    max-width: 90%;
-    padding: 2rem;
-    border-radius: 8px;
-    position: relative;
-  }
-</style>

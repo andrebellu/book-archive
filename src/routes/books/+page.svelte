@@ -43,7 +43,7 @@
     <button class="btn btn-gray hover:bg w-32" on:click={handleList}>
       {list ? "Grid" : "List"}
     </button>
-    <AddMore />
+    <!--<AddMore />-->
     <Add />
   </div>
 
