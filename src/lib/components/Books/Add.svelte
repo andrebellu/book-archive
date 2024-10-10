@@ -12,6 +12,7 @@
   let success;
   let readCheckbox;
   let readingCheckbox;
+  let bookCover;
 
   function filter() {
     filteredAuthors = $authors.filter(
@@ -123,6 +124,8 @@
     search = `${author.name} ${author.surname}`;
     filteredAuthors = [];
   }
+
+  $: bookCover;
 </script>
 
 <button class="btn btn-success hover:bg w-32" onclick="my_modal_3.showModal()">
@@ -137,95 +140,104 @@
       >
     </form>
     <form id="addBookForm" on:submit={addBook}>
-      <div class="preview">
-        <img
-          src="https://picsum.photos/200/300"
-          alt="Book cover"
-          class="rounded-lg"
-        />
+      <div class="first-section flex flex-row justify-between h-56 gap-x-4">
+        <div class="preview">
+          <img
+            src={bookCover ||
+              "https://images.unsplash.com/photo-1599508704512-2f19efd1e35f?q=80&w=1335&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
+            alt="Book cover"
+            class="rounded-lg h-56 object-cover aspect-square"
+            on:error={() => (bookCover = null)}
+          />
+        </div>
+
+        <div class="flex flex-col justify-between">
+          <input
+            type="text"
+            id="title"
+            class="input input-bordered w-full placeholder:text-center"
+            placeholder="Book Title"
+            required
+          />
+
+          <div class="relative">
+            <input
+              type="text"
+              class="input input-bordered w-full placeholder:text-center"
+              placeholder="Search Author"
+              bind:value={search}
+              on:input={filter}
+              required
+            />
+
+            <!-- Author dropdown menu -->
+            {#if search && filteredAuthors.length > 0}
+              <ul
+                class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full absolute z-10 max-h-40 overflow-y-auto"
+              >
+                <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                {#each filteredAuthors as author}
+                  <!-- svelte-ignore a11y-click-events-have-key-events -->
+                  <li
+                    class="cursor-pointer hover:bg-base-200 p-2"
+                    on:click={() => selectAuthor(author)}
+                  >
+                    {author.name}
+                    {author.surname}
+                  </li>
+                {/each}
+              </ul>
+            {/if}
+          </div>
+
+          <input
+            type="text"
+            id="cover"
+            class="input input-bordered w-full placeholder:text-center"
+            placeholder="Cover URL"
+            bind:value={bookCover}
+            required
+          />
+          <input
+            type="text"
+            id="genre"
+            class="input input-bordered w-full placeholder:text-center"
+            placeholder="Genre (comma-separated)"
+            required
+          />
+        </div>
       </div>
-      <div class="gap-y-4 flex flex-col">
-        <input
-          type="text"
-          id="title"
-          class="input input-bordered w-full placeholder:text-center"
-          placeholder="Book Title"
-          required
-        />
 
-        <input
-          type="text"
-          id="cover"
-          class="input input-bordered w-full placeholder:text-center"
-          placeholder="Cover URL"
-          required
-        />
-
+      <div class="second-section gap-y-4 flex flex-col py-4">
         <input
           type="text"
           id="description"
           class="input input-bordered w-full placeholder:text-center"
           placeholder="Book Description"
-          required
         />
 
-        <!-- Input for searching authors -->
-        <div class="relative">
-          <input
-            type="text"
-            class="input input-bordered w-full placeholder:text-center"
-            placeholder="Search Author"
-            bind:value={search}
-            on:input={filter}
-            required
-          />
+        <div class="checkboxes flex flex-row">
+          <div class="flex items-center content-center !w-full">
+            <label for="read" class="label">Read</label>
+            <input
+              id="read"
+              bind:this={readCheckbox}
+              type="checkbox"
+              class="checkbox"
+              on:change={handleReadChange}
+            />
+          </div>
 
-          <!-- Author dropdown menu -->
-          {#if search && filteredAuthors.length > 0}
-            <ul
-              class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full absolute z-10 max-h-40 overflow-y-auto"
-            >
-              {#each filteredAuthors as author}
-                <li
-                  class="cursor-pointer hover:bg-base-200 p-2"
-                  on:click={() => selectAuthor(author)}
-                >
-                  {author.name}
-                  {author.surname}
-                </li>
-              {/each}
-            </ul>
-          {/if}
-        </div>
-
-        <input
-          type="text"
-          id="genre"
-          class="input input-bordered w-full placeholder:text-center"
-          placeholder="Genre (comma-separated)"
-          required
-        />
-
-        <div class="flex items-center content-center !w-full">
-          <label for="read" class="label">Read</label>
-          <input
-            id="read"
-            bind:this={readCheckbox}
-            type="checkbox"
-            class="checkbox"
-            on:change={handleReadChange}
-          />
-        </div>
-
-        <div class="flex items-center content-center !w-full">
-          <label for="reading" class="label">Reading</label>
-          <input
-            id="reading"
-            bind:this={readingCheckbox}
-            type="checkbox"
-            class="checkbox"
-            on:change={handleReadingChange}
-          />
+          <div class="flex items-center content-center !w-full">
+            <label for="reading" class="label">Reading</label>
+            <input
+              id="reading"
+              bind:this={readingCheckbox}
+              type="checkbox"
+              class="checkbox"
+              on:change={handleReadingChange}
+            />
+          </div>
         </div>
 
         <button type="submit" class="btn btn-success w-full"> Add </button>
