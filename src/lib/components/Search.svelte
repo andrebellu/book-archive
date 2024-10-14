@@ -2,11 +2,13 @@
     import { books, filteredBooks } from "../../store.js";
 
     function handleSearch(e) {
-        filteredBooks.update((books) => {
-            return books.filter((book) =>
-                book.title.toLowerCase().includes(e.target.value.toLowerCase())
-            );
-        });
+        let searchedBooks = [];
+
+        searchedBooks = $books.filter((book) =>
+            book.title.toLowerCase().includes(e.target.value.toLowerCase())
+        );
+
+        filteredBooks.set(searchedBooks);
     }
 </script>
 
@@ -22,6 +24,7 @@
             type="text"
             class="w-full h-full focus:outline-none bg-transparent"
             on:input={handleSearch}
+            placeholder="Search for a book"
         />
     </div>
     <form method="dialog" class="modal-backdrop">
