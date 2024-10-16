@@ -31,4 +31,8 @@ body.no-scroll::-webkit-scrollbar {
     .category {
         @apply hover:scale-125 text-gray-500 hover:text-black transition-all duration-300 ease-in-out dark:text-gray-400 dark:hover:text-white text-lg;
     }
+
+    .filter {
+        @apply badge join-item btn;
+    }
 }
