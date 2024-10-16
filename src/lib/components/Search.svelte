@@ -15,7 +15,7 @@
 <button class="btn" onclick="my_modal_2.showModal()">
     <span class="material-symbols-outlined"> search </span>
 </button>
-<dialog id="my_modal_2" class="modal">
+<dialog id="my_modal_2" class="modal modal-bottom sm:modal-middle">
     <div
         class="modal-box flex flex-row items-center content-center p-4 gap-x-2 glass bg-opacity-75"
     >
@@ -26,6 +26,13 @@
             on:input={handleSearch}
             placeholder="Search for a book"
         />
+        <!-- <form method="dialog">
+            <button
+                class="hover:scale-125 ease-in-out duration-150 text-gray-300"
+            >
+                X</button
+            >
+        </form> -->
     </div>
     <form method="dialog" class="modal-backdrop">
         <button>close</button>

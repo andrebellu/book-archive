@@ -40,8 +40,7 @@
             .getElementById("genre")
             .value.split(",")
             .map((g) => g.trim());
-        const read = document.getElementById("read").checked;
-        const reading = document.getElementById("reading").checked;
+        const status = document.getElementById("status").value;
 
         if (!author_id) {
             message = "Please select a valid author.";
@@ -54,11 +53,12 @@
             title,
             cover,
             description,
-            read,
-            reading,
+            status,
             author_id,
             genre,
         };
+
+        console.log("Adding book:", data);
 
         filteredBooks.update((b) => [...b, data]);
 
@@ -95,18 +95,6 @@
 
     function clearMessage() {
         message = null;
-    }
-
-    function handleReadChange() {
-        if (readCheckbox.checked) {
-            readingCheckbox.checked = false;
-        }
-    }
-
-    function handleReadingChange() {
-        if (readingCheckbox.checked) {
-            readCheckbox.checked = false;
-        }
     }
 
     function selectAuthor(author) {
@@ -209,29 +197,13 @@
                     placeholder="Book Description"
                 />
 
-                <div class="checkboxes flex flex-row">
-                    <div class="flex items-center content-center !w-full">
-                        <label for="read" class="label">Read</label>
-                        <input
-                            id="read"
-                            bind:this={readCheckbox}
-                            type="checkbox"
-                            class="checkbox"
-                            on:change={handleReadChange}
-                        />
-                    </div>
-
-                    <div class="flex items-center content-center !w-full">
-                        <label for="reading" class="label">Reading</label>
-                        <input
-                            id="reading"
-                            bind:this={readingCheckbox}
-                            type="checkbox"
-                            class="checkbox"
-                            on:change={handleReadingChange}
-                        />
-                    </div>
-                </div>
+                <select class="select select-bordered" id="status">
+                    <option disabled selected>Select Status</option>
+                    <option value="read">Read</option>
+                    <option value="reading">Reading</option>
+                    <option value="wishlist">Wishlist</option>
+                    <option value="lib">In Library</option>
+                </select>
 
                 <button type="submit" class="btn btn-success w-full">
                     Add
