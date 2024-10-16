@@ -106,8 +106,11 @@
     $: bookCover;
 </script>
 
-<button class="btn btn-success hover:bg w-32" onclick="my_modal_3.showModal()">
-    Add a book
+<button
+    class="btn text-lg btn-success hover:bg material-symbols-outlined"
+    onclick="my_modal_3.showModal()"
+>
+    add
 </button>
 
 <dialog id="my_modal_3" class="modal backdrop-blur-sm">

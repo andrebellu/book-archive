@@ -39,18 +39,26 @@
 </script>
 
 <body class="flex flex-col items-center no-scroll">
-    <div class="flex flex-row-reverse items-center gap-4 p-10">
-        <Search />
-        <button class="btn btn-gray hover:bg w-32" on:click={handleList}>
-            {list ? "Grid" : "List"}
-        </button>
+    <div class="flex flex-col items-center justify-center p-10 gap-y-4">
+        <div class="flex flex-row-reverse items-center gap-4">
+            <Search />
+            <button
+                class="btn hover:bg material-symbols-outlined text-lg"
+                on:click={handleList}
+            >
+                {list ? "grid_view" : "list"}
+            </button>
+
+            <Add />
+        </div>
         <Filters />
-        <Add />
     </div>
 
     {#if list}
-        <div class="grid grid-cols-4 px-10 gap-8">
-            {#each $books as book}
+        <div
+            class="grid lg:grid-cols-4 lg:px-10 gap-4 md:grid-cols-1 md:w-full w-full px-4"
+        >
+            {#each $filteredBooks as book}
                 <BookCardList {book} />
             {/each}
         </div>
