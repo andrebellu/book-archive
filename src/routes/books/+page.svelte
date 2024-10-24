@@ -7,6 +7,7 @@
     import BookCardList from "$lib/components/Books/BookCardList.svelte";
     import AddMore from "$lib/components/Books/AddMore.svelte";
     import Filters from "$lib/components/Books/Filters.svelte";
+    import Help from "../../lib/components/Books/Help.svelte";
     export let data;
 
     let list = false;
@@ -41,12 +42,13 @@
 <body class="flex flex-col items-center no-scroll">
     <div class="flex flex-col items-center justify-center p-10 gap-y-4">
         <div class="flex flex-row-reverse items-center gap-4">
+            <Help />
+
             <Search />
-            <button
-                class="btn hover:bg material-symbols-outlined text-lg"
-                on:click={handleList}
-            >
-                {list ? "grid_view" : "list"}
+            <button class="btn hover:bg text-lg" on:click={handleList}>
+                <span class="material-symbols-outlined">
+                    {list ? "grid_view" : "list"}
+                </span>
             </button>
 
             <Add />

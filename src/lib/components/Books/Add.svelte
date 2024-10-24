@@ -107,10 +107,10 @@
 </script>
 
 <button
-    class="btn text-lg btn-success hover:bg material-symbols-outlined"
+    class="btn text-lg btn-success hover:bg"
     onclick="my_modal_3.showModal()"
 >
-    add
+    <span class="material-symbols-outlined"> add </span>
 </button>
 
 <dialog id="my_modal_3" class="modal backdrop-blur-sm">

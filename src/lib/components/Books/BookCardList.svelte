@@ -55,11 +55,11 @@
     <figure class="w-6">
         <img src={book.cover} alt="cover" />
     </figure>
-    <div class="md:hidden lg:flex sm:hidden gap-x-4">
+    <div class="flex gap-x-4 md:flex-row">
         <p class="font-bold">
             {book.title}
         </p>
-        <div class="md:hidden lg:flex lg:flex-row sm:hidden">
+        <div>
             <p class="truncate">{name} {surname}</p>
         </div>
     </div>
