@@ -1,4 +1,5 @@
 <script>
+    import { onMount } from "svelte";
     import { books, filteredBooks } from "../../store.js";
 
     function handleSearch(e) {
@@ -9,6 +10,29 @@
         );
 
         filteredBooks.set(searchedBooks);
+    }
+
+    onMount(() => {
+        function handleKeydown(e) {
+            const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+            if (
+                (isMac && e.metaKey && e.key === "k") ||
+                (!isMac && e.ctrlKey && e.key === "k")
+            ) {
+                e.preventDefault();
+                openModal();
+            }
+        }
+
+        window.addEventListener("keydown", handleKeydown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeydown);
+        };
+    });
+
+    function openModal() {
+        document.getElementById("my_modal_2").showModal();
     }
 </script>
 
