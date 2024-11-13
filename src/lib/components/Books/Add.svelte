@@ -60,19 +60,6 @@
       genre,
     };
 
-    $books = [
-      ...$books,
-      {
-        id,
-        title,
-        cover,
-        description,
-        read,
-        reading,
-        author_id,
-        genre,
-      },
-    ];
     try {
       const res = await fetch("/api/books/add", {
         method: "POST",
@@ -101,6 +88,10 @@
       message = "An error occurred while adding the book.";
       success = false;
     }
+
+    $books.update((existingBooks) => {
+      return [...existingBooks, data];
+    });
   }
 
   function clearMessage() {
@@ -126,6 +117,7 @@
   }
 
   $: bookCover;
+  $: $books;
 </script>
 
 <button class="btn btn-success hover:bg w-32" onclick="my_modal_3.showModal()">
@@ -139,6 +131,7 @@
         >✕</button
       >
     </form>
+
     <form id="addBookForm" on:submit={addBook}>
       <div class="first-section flex flex-row justify-between h-56 gap-x-4">
         <div class="preview">
@@ -196,8 +189,8 @@
             class="input input-bordered w-full placeholder:text-center"
             placeholder="Cover URL"
             bind:value={bookCover}
-            required
           />
+
           <input
             type="text"
             id="genre"
@@ -217,7 +210,7 @@
         />
 
         <div class="checkboxes flex flex-row">
-          <div class="flex items-center content-center !w-full">
+          <div class="flex items-center content-center">
             <label for="read" class="label">Read</label>
             <input
               id="read"
@@ -228,7 +221,7 @@
             />
           </div>
 
-          <div class="flex items-center content-center !w-full">
+          <div class="flex items-center content-center">
             <label for="reading" class="label">Reading</label>
             <input
               id="reading"
