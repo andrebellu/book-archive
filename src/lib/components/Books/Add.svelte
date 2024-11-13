@@ -1,5 +1,5 @@
 <script>
-  import { authors } from "../../../store";
+  import { authors, filteredBooks } from "../../../store";
   import { onMount } from "svelte";
   import Alert from "./Alert.svelte";
   import { v4 as uuidv4 } from "uuid";
@@ -40,8 +40,7 @@
       .getElementById("genre")
       .value.split(",")
       .map((g) => g.trim());
-    const read = document.getElementById("read").checked;
-    const reading = document.getElementById("reading").checked;
+    const status = document.getElementById("status").value;
 
     if (!author_id) {
       message = "Please select a valid author.";
@@ -54,11 +53,14 @@
       title,
       cover,
       description,
-      read,
-      reading,
+      status,
       author_id,
       genre,
     };
+
+    console.log("Adding book:", data);
+
+    filteredBooks.update((b) => [...b, data]);
 
     try {
       const res = await fetch("/api/books/add", {
@@ -98,18 +100,6 @@
     message = null;
   }
 
-  function handleReadChange() {
-    if (readCheckbox.checked) {
-      readingCheckbox.checked = false;
-    }
-  }
-
-  function handleReadingChange() {
-    if (readingCheckbox.checked) {
-      readCheckbox.checked = false;
-    }
-  }
-
   function selectAuthor(author) {
     selectedAuthor = author;
     search = `${author.name} ${author.surname}`;
@@ -117,11 +107,13 @@
   }
 
   $: bookCover;
-  $: $books;
 </script>
 
-<button class="btn btn-success hover:bg w-32" onclick="my_modal_3.showModal()">
-  Add a book
+<button
+  class="btn text-lg btn-success hover:bg"
+  onclick="my_modal_3.showModal()"
+>
+  <span class="material-symbols-outlined"> add </span>
 </button>
 
 <dialog id="my_modal_3" class="modal backdrop-blur-sm">
@@ -131,7 +123,6 @@
         >✕</button
       >
     </form>
-
     <form id="addBookForm" on:submit={addBook}>
       <div class="first-section flex flex-row justify-between h-56 gap-x-4">
         <div class="preview">
@@ -189,8 +180,8 @@
             class="input input-bordered w-full placeholder:text-center"
             placeholder="Cover URL"
             bind:value={bookCover}
+            required
           />
-
           <input
             type="text"
             id="genre"
@@ -209,29 +200,13 @@
           placeholder="Book Description"
         />
 
-        <div class="checkboxes flex flex-row">
-          <div class="flex items-center content-center">
-            <label for="read" class="label">Read</label>
-            <input
-              id="read"
-              bind:this={readCheckbox}
-              type="checkbox"
-              class="checkbox"
-              on:change={handleReadChange}
-            />
-          </div>
-
-          <div class="flex items-center content-center">
-            <label for="reading" class="label">Reading</label>
-            <input
-              id="reading"
-              bind:this={readingCheckbox}
-              type="checkbox"
-              class="checkbox"
-              on:change={handleReadingChange}
-            />
-          </div>
-        </div>
+        <select class="select select-bordered" id="status">
+          <option disabled selected>Select Status</option>
+          <option value="read">Read</option>
+          <option value="reading">Reading</option>
+          <option value="wishlist">Wishlist</option>
+          <option value="lib">In Library</option>
+        </select>
 
         <button type="submit" class="btn btn-success w-full"> Add </button>
       </div>

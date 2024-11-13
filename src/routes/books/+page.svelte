@@ -1,86 +1,77 @@
 <script>
   import { onMount } from "svelte";
-  import { books, authors, filteredBooks } from "./path/to/store";
-  import Search from "./Search.svelte";
-  import CarouselAdd from "./CarouselAdd.svelte";
-  import BookCard from "./BookCard.svelte";
-  import BookCardList from "./BookCardList.svelte";
-
+  import BookCard from "$lib/components/Books/BookCard.svelte";
+  import Add from "$lib/components/Books/Add.svelte";
+  import { books, authors, filteredBooks } from "../../store.js";
+  import Search from "$lib/components/Search.svelte";
+  import BookCardList from "$lib/components/Books/BookCardList.svelte";
+  import Filters from "$lib/components/Books/Filters.svelte";
+  import Help from "../../lib/components/Books/Help.svelte";
   export let data;
 
   let list = false;
-  let isLoading = true;
-  let errorMessage = "";
 
   onMount(() => {
     setVariables();
   });
 
   function setVariables() {
-    try {
-      books.set(data.books);
-      filteredBooks.set(data.books);
+    books.set(data.books);
 
-      books.update((books) => {
-        return books.sort((a, b) => {
-          if (!a.read && b.read) return -1;
-          if (a.reading && !b.reading) return -1;
-          return 0;
-        });
+    filteredBooks.set(data.books);
+
+    books.update((books) => {
+      return books.sort((a, b) => {
+        if (!a.read && b.read) return -1;
+        if (a.reading && !b.reading) return -1;
+        return 0;
       });
+    });
 
-      authors.set(data.authors);
-      isLoading = false;
-    } catch (error) {
-      errorMessage = "Failed to load data";
-      console.error(error);
-    }
+    authors.set(data.authors);
   }
 
   async function handleList() {
     list = !list;
   }
 
-  $: $books;
+  $: $books = $books;
 </script>
 
-<body class="flex flex-col items-center no-scroll" aria-busy={isLoading}>
-  <div class="flex flex-row-reverse items-center gap-4 p-10">
-    <Search />
-    <button
-      class="btn btn-gray hover:bg w-32"
-      on:click={handleList}
-      aria-pressed={list}
-    >
-      {list ? "Grid" : "List"}
-    </button>
-    <CarouselAdd />
+<body class="flex flex-col items-center no-scroll">
+  <div class="flex flex-col items-center justify-center p-10 gap-y-4">
+    <div class="flex flex-row-reverse items-center gap-4">
+      <Help />
+
+      <Search />
+      <button class="btn hover:bg text-lg" on:click={handleList}>
+        <span class="material-symbols-outlined">
+          {list ? "grid_view" : "list"}
+        </span>
+      </button>
+
+      <Add />
+    </div>
+    <Filters />
   </div>
 
-  {#if isLoading}
-    <div class="loading">Loading...</div>
-  {:else if errorMessage}
-    <div class="error">{errorMessage}</div>
-  {:else if list}
+  {#if list}
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 px-10 gap-8"
+      class="grid lg:grid-cols-4 lg:px-10 gap-4 md:grid-cols-1 md:w-full w-full px-4"
     >
-      {#each $books as book}
+      {#each $filteredBooks as book}
         <BookCardList {book} />
       {/each}
     </div>
   {:else}
     <div class="flex justify-center items-center flex-wrap gap-10 px-10">
-      {#each $books as book}
+      {#each $filteredBooks as book}
         <BookCard {book} />
       {/each}
     </div>
   {/if}
-</body>
 
-<style>
-  .loading {
-    font-size: 1.5em;
-    color: #888;
-  }
-</style>
+  {#if $filteredBooks.length === 0}
+    <h1>No books found!</h1>
+  {/if}
+</body>
