@@ -1,12 +1,14 @@
-import { supabase } from "$lib/server/supabase/supabaseClient";
-
 export async function load() {
-    let { data: books, error } = await supabase.from("books").select("*");
-    let { data: authors } = await supabase.from("authors").select("*");
+  // Fetch libri dal NAS
+  const booksRes = await fetch('http://192.168.1.50:3006/books');
+  const books = booksRes.ok ? await booksRes.json() : [];
 
+  // Fetch autori dal NAS
+  const authorsRes = await fetch('http://192.168.1.50:3006/authors');
+  const authors = authorsRes.ok ? await authorsRes.json() : [];
 
-    return {
-        books: books ?? [],
-        authors: authors ?? [],
-    };
+  return {
+    books,
+    authors,
+  };
 }

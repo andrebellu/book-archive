@@ -1,66 +1,41 @@
 <script>
-    import { onMount } from "svelte";
-    import { authors } from "../../../store.js";
-    import { goto } from "$app/navigation";
+  import { onMount } from "svelte";
+  import { authors } from "../../../store.js";
+  import { goto } from "$app/navigation";
 
-    export let book;
+  export let book;
+  let authorName = "";
 
-    let name = "";
-    let surname = "";
+  onMount(() => {
+    const author = $authors.find((a) => a.id === book.author_id);
+    if (author) authorName = `${author.name} ${author.surname ?? ""}`;
+  });
 
-    onMount(() => {
-        const author = $authors.find((author) => author.id === book.author_id);
-        if (author) {
-            name = author.name;
-            surname = author.surname;
-        }
-    });
-
-    function handleClick() {
-        console.log(book.id);
-        goto(`/book/${book.id}`);
-    }
-
-    function getClassNames(book) {
-        let baseClasses =
-            "h-16 px-4 flex justify-between items-center content-between shadow-xl rounded-md gap-x-4 group hover:scale-110 transition-all duration-300 hover:shadow-2xl cursor-pointer";
-        let statusClass = "";
-
-        switch (book.status) {
-            case "read":
-                statusClass = "border-2 border-green-600";
-                break;
-            case "reading":
-                statusClass = "border-2 border-purple-400";
-                break;
-            case "lib":
-                statusClass = "border-2 border-yellow-500 border-dashed";
-                break;
-            case "wishlist":
-                statusClass = "border-2 border-blue-400";
-                break;
-            default:
-                statusClass = "";
-        }
-
-        return `${baseClasses} ${statusClass}`;
-    }
+  function handleClick() {
+    goto(`/book/${book.id}`);
+  }
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore missing-declaration -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-
-<div class={`${getClassNames(book)}`} on:click={handleClick}>
-    <figure class="w-6">
-        <img src={book.cover} alt="cover" />
-    </figure>
-    <div class="flex gap-x-4 md:flex-row">
-        <p class="font-bold">
-            {book.title}
-        </p>
-        <div>
-            <p class="truncate">{name} {surname}</p>
-        </div>
+<div
+  class="flex items-center justify-between w-full p-3 bg-base-100 border-l-4 rounded-md shadow-sm hover:shadow-md hover:bg-gray-50 cursor-pointer transition"
+  on:click={handleClick}
+>
+  <div class="flex items-center gap-3">
+    <img src={book.cover} alt="cover" class="h-14 w-10 rounded shadow-md" />
+    <div>
+      <p class="font-semibold">{book.title}</p>
+      <p class="text-sm text-gray-500">{authorName}</p>
     </div>
+  </div>
+
+  <div class="flex gap-2">
+    <span
+      class="badge badge-outline max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap"
+      title={book.genre}
+    >
+      {book.genre}
+    </span>
+
+    {#if book.is_borrowed}<span class="badge badge-warning">Prestito</span>{/if}
+  </div>
 </div>

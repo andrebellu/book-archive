@@ -1,12 +1,13 @@
 <script>
   import { onMount } from "svelte";
   import BookCard from "$lib/components/Books/BookCard.svelte";
-  import Add from "$lib/components/Books/Add.svelte";
+  import Add from "$lib/components/Books/Menu/Add.svelte";
   import { books, authors, filteredBooks } from "../../store.js";
-  import Search from "$lib/components/Search.svelte";
+  import Search from "$lib/components/Books/Menu/Search.svelte";
   import BookCardList from "$lib/components/Books/BookCardList.svelte";
-  import Filters from "$lib/components/Books/Filters.svelte";
-  import Help from "../../lib/components/Books/Help.svelte";
+  import Filters from "$lib/components/Books/Menu/Filters.svelte";
+  import Help from "../../lib/components/Books/Menu/Help.svelte";
+  import Menu from "$lib/components/Books/Menu/Menu.svelte";
   export let data;
 
   let list = false;
@@ -38,40 +39,30 @@
   $: $books = $books;
 </script>
 
-<body class="flex flex-col items-center no-scroll">
-  <div class="flex flex-col items-center justify-center p-10 gap-y-4">
-    <div class="flex flex-row-reverse items-center gap-4">
-      <Help />
+<body class="flex flex-col items-center min-h-screen">
+  <div class="w-full max-w-screen-xl p-6 flex flex-col gap-4">
+    <Menu />
 
-      <Search />
-      <button class="btn hover:bg text-lg" on:click={handleList}>
-        <span class="material-symbols-outlined">
-          {list ? "grid_view" : "list"}
-        </span>
-      </button>
+    {#if list}
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+      >
+        {#each $filteredBooks as book}
+          <BookCardList {book} />
+        {/each}
+      </div>
+    {:else}
+      <div class="flex flex-wrap justify-center gap-6">
+        {#each $filteredBooks as book}
+          <BookCard {book} />
+        {/each}
+      </div>
+    {/if}
 
-      <Add />
-    </div>
-    <Filters />
+    {#if $filteredBooks.length === 0}
+      <h1 class="text-xl text-gray-600 text-center mt-10">
+        📚 Nessun libro trovato!
+      </h1>
+    {/if}
   </div>
-
-  {#if list}
-    <div
-      class="grid lg:grid-cols-4 lg:px-10 gap-4 md:grid-cols-1 md:w-full w-full px-4"
-    >
-      {#each $filteredBooks as book}
-        <BookCardList {book} />
-      {/each}
-    </div>
-  {:else}
-    <div class="flex justify-center items-center flex-wrap gap-10 px-10">
-      {#each $filteredBooks as book}
-        <BookCard {book} />
-      {/each}
-    </div>
-  {/if}
-
-  {#if $filteredBooks.length === 0}
-    <h1>No books found!</h1>
-  {/if}
 </body>

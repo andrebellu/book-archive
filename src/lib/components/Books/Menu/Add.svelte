@@ -1,17 +1,14 @@
 <script>
-  import { authors, filteredBooks } from "../../../store";
+  import { authors, filteredBooks, books } from "../../../../store";
   import { onMount } from "svelte";
-  import Alert from "./Alert.svelte";
+  import Alert from "../Alert.svelte";
   import { v4 as uuidv4 } from "uuid";
-  import { books } from "../../../store";
 
   let search = "";
   let filteredAuthors = [];
   let selectedAuthor = null;
   let message;
   let success;
-  let readCheckbox;
-  let readingCheckbox;
   let bookCover;
 
   function filter() {
@@ -26,91 +23,83 @@
     filter();
   });
 
+  function clearMessage() {
+    message = null;
+    success = null;
+  }
+
   $: $authors, filter();
+
+  function selectAuthor(author) {
+    selectedAuthor = author;
+    search = author.name;
+    filteredAuthors = [];
+  }
 
   async function addBook(e) {
     e.preventDefault();
 
     const id = uuidv4();
     const title = document.getElementById("title").value;
-    const cover = document.getElementById("cover").value;
+    const cover = document.getElementById("cover").value || "/questionmark.png";
     const description = document.getElementById("description").value;
     const author_id = selectedAuthor ? selectedAuthor.id : null;
     const genre = document
       .getElementById("genre")
       .value.split(",")
       .map((g) => g.trim());
-    const status = document.getElementById("status").value;
+    const reading_status = document.getElementById("reading_status").value;
+    const shelf = document.getElementById("shelf").value;
 
     if (!author_id) {
-      message = "Please select a valid author.";
+      message = "Seleziona un autore valido.";
       success = false;
       return;
     }
 
-    const data = {
+    const newBook = {
       id,
       title,
       cover,
-      description,
-      status,
+      short_description: description,
+      reading_status,
       author_id,
       genre,
+      shelf,
+      is_borrowed: false,
+      publisher: "",
+      publication_date: new Date().toISOString().split("T")[0],
     };
 
-    console.log("Adding book:", data);
-
-    filteredBooks.update((b) => [...b, data]);
-
     try {
-      const res = await fetch("/api/books/add", {
+      const res = await fetch("http://192.168.1.50:3006/books", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newBook),
       });
 
-      const result = await res.json();
+      if (!res.ok) throw new Error(`Errore server: ${res.status}`);
 
-      if (res.ok) {
-        document.getElementById("addBookForm").reset();
-        message = "Book added successfully!";
-        success = true;
-      } else {
-        console.error("Error adding book:", result);
-        message = result.error || "An error occurred while adding the book.";
-        success = false;
-      }
+      const savedBook = await res.json();
 
-      console.log("Book added:", result);
+      $books.update((existing) => [...existing, savedBook]);
+
+      message = "📚 Libro aggiunto con successo!";
+      success = true;
+      document.getElementById("addBookForm").reset();
+      bookCover = null;
+
       my_modal_3.close();
     } catch (error) {
-      console.error("Error adding book:", error);
-      message = "An error occurred while adding the book.";
+      console.error("Errore aggiunta libro:", error);
+      message = "❌ Errore durante l'aggiunta del libro.";
       success = false;
     }
-
-    $books.update((existingBooks) => {
-      return [...existingBooks, data];
-    });
   }
-
-  function clearMessage() {
-    message = null;
-  }
-
-  function selectAuthor(author) {
-    selectedAuthor = author;
-    search = `${author.name} ${author.surname}`;
-    filteredAuthors = [];
-  }
-
-  $: bookCover;
 </script>
 
 <button
-  class="btn text-lg btn-success hover:bg"
+  class="btn text-lg btn-success hover:bg rounded-full"
   onclick="my_modal_3.showModal()"
 >
   <span class="material-symbols-outlined"> add </span>
@@ -127,8 +116,7 @@
       <div class="first-section flex flex-row justify-between h-56 gap-x-4">
         <div class="preview">
           <img
-            src={bookCover ||
-              "https://images.unsplash.com/photo-1599508704512-2f19efd1e35f?q=80&w=1335&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
+            src={bookCover || "/questionmark.png"}
             alt="Book cover"
             class="rounded-lg h-56 object-cover aspect-square"
             on:error={() => (bookCover = null)}
@@ -154,7 +142,6 @@
               required
             />
 
-            <!-- Author dropdown menu -->
             {#if search && filteredAuthors.length > 0}
               <ul
                 class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full absolute z-10 max-h-40 overflow-y-auto"
@@ -167,7 +154,6 @@
                     on:click={() => selectAuthor(author)}
                   >
                     {author.name}
-                    {author.surname}
                   </li>
                 {/each}
               </ul>
@@ -200,12 +186,17 @@
           placeholder="Book Description"
         />
 
-        <select class="select select-bordered" id="status">
+        <select class="select select-bordered" id="shelf">
+          <option disabled selected>Select Shelf</option>
+          <option value="read">Mobile Marrone</option>
+          <option value="reading">Mobile Grigio</option>
+        </select>
+
+        <select class="select select-bordered" id="reading_status">
           <option disabled selected>Select Status</option>
           <option value="read">Read</option>
           <option value="reading">Reading</option>
-          <option value="wishlist">Wishlist</option>
-          <option value="lib">In Library</option>
+          <option value="unread">Unread</option>
         </select>
 
         <button type="submit" class="btn btn-success w-full"> Add </button>
