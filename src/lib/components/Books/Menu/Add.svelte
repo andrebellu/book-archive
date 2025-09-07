@@ -63,7 +63,6 @@
       shelf,
       is_borrowed: false,
       publisher: "",
-      publication_date: new Date().toISOString().split("T")[0],
     };
 
     console.log("Aggiunta libro:", newBook);
@@ -113,8 +112,6 @@
             shelf: row.shelf || row.scaffale || "",
             is_borrowed: false,
             publisher: row.publisher || "",
-            publication_date:
-              row.publication_date || new Date().toISOString().split("T")[0],
           };
           try {
             const res = await fetch("/api/books/add", {
