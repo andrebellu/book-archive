@@ -1,14 +1,22 @@
+const LOCAL_API = import.meta.env.VITE_API_LOCAL;
+
+async function fetchWithFallback(path) {
+  try {
+    const res = await fetch(`${LOCAL_API}${path}`);
+    if (res.ok) return await res.json();
+    throw new Error('Local fetch failed');
+  } catch {
+    console.warn('Local API unreachable');
+  }
+
+  return []; // fallback
+}
+
 export async function load() {
-  // Fetch libri dal NAS
-  const booksRes = await fetch('http://192.168.1.50:3006/books');
-  const books = booksRes.ok ? await booksRes.json() : [];
+  const [books, authors] = await Promise.all([
+    fetchWithFallback('/books'),
+    fetchWithFallback('/authors')
+  ]);
 
-  // Fetch autori dal NAS
-  const authorsRes = await fetch('http://192.168.1.50:3006/authors');
-  const authors = authorsRes.ok ? await authorsRes.json() : [];
-
-  return {
-    books,
-    authors,
-  };
+  return { books, authors };
 }

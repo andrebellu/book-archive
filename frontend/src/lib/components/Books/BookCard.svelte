@@ -37,39 +37,53 @@
   class={`w-60 shadow-lg rounded-xl border-2 ${getStatusClass(book.reading_status)} overflow-hidden cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl text-left p-0`}
   on:click={openModal}
 >
-  {#if book.cover}
-    <img src={book.cover} alt={book.title} class="h-80 w-full object-cover" />
-  {:else}
-    <img
-      src="https://placehold.co/800?text=No+Cover&font=roboto"
-      alt="Default cover"
-      class="h-80 w-full object-cover"
-    />
-  {/if}
-
-  <div class="p-4 flex flex-col">
-    <h2 class="font-bold text-lg truncate text-green-950">{book.title}</h2>
-    <p class="text-sm text-green-900 truncate">{authorName}</p>
-
-    <div class="flex flex-wrap gap-1 mt-2">
-      <span
-        class="badge badge-outline w-32 flex items-center"
-        title={book.genre}
+  <div class="relative w-full h-80">
+    {#if book.cover}
+      <img src={book.cover} alt={book.title} class="h-80 w-full object-cover" />
+    {:else}
+      <img
+        src="https://placehold.co/800?text=No+Cover&font=roboto"
+        alt="Default cover"
+        class="h-80 w-full object-cover"
+      />
+    {/if}
+    <div
+      class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center p-4 text-center"
+    >
+      <h2
+        class="font-bold text-xl md:text-2xl text-white drop-shadow mb-2 w-full truncate overflow-hidden whitespace-nowrap"
       >
-        <span class="overflow-hidden text-ellipsis whitespace-nowrap">
-          {book.genre}
+        {book.title}
+      </h2>
+      <p class="text-base text-gray-200 truncate drop-shadow mb-3 w-full">
+        {authorName}
+      </p>
+      <div class="flex flex-wrap gap-1 mb-3 justify-center w-full">
+        <span
+          class="badge badge-outline w-32 flex items-center bg-white bg-opacity-20 text-white border-white border-opacity-30 justify-center"
+          title={book.genre}
+        >
+          <span class="overflow-hidden text-ellipsis whitespace-nowrap">
+            {book.genre}
+          </span>
         </span>
-      </span>
-
-      {#if book.shelf}<span class="badge badge-secondary">{book.shelf}</span
-        >{/if}
-      {#if book.is_borrowed}<span class="badge badge-warning">In prestito</span
-        >{/if}
+        {#if book.shelf}
+          <span
+            class="badge badge-secondary bg-white bg-opacity-20 text-white border-white border-opacity-30 justify-center"
+            >{book.shelf}</span
+          >
+        {/if}
+        {#if book.is_borrowed}
+          <span
+            class="badge badge-warning bg-white bg-opacity-20 text-white border-white border-opacity-30 justify-center"
+            >In prestito</span
+          >
+        {/if}
+      </div>
+      <p class="text-sm text-gray-200 line-clamp-3 drop-shadow w-full">
+        {book.short_description}
+      </p>
     </div>
-
-    <p class="text-xs text-gray-500 mt-2 line-clamp-3">
-      {book.short_description}
-    </p>
   </div>
 </button>
 
