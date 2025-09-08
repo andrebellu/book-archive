@@ -1,12 +1,8 @@
 <script>
   import { onMount } from "svelte";
   import BookCard from "$lib/components/Books/BookCard.svelte";
-  import Add from "$lib/components/Books/Menu/Add.svelte";
   import { books, authors, filteredBooks } from "../../store.js";
-  import Search from "$lib/components/Books/Menu/Search.svelte";
   import BookCardList from "$lib/components/Books/BookCardList.svelte";
-  import Filters from "$lib/components/Books/Menu/Filters.svelte";
-  import Help from "../../lib/components/Books/Menu/Help.svelte";
   import Menu from "$lib/components/Books/Menu/Menu.svelte";
   export let data;
 

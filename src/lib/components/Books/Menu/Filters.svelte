@@ -1,90 +1,153 @@
 <script>
   import { books, filteredBooks } from "../../../../store.js";
+  import { fade, fly } from "svelte/transition";
+  let showFilters = false;
 
   let active = {
-    wishlist: false,
-    library: false,
     read: false,
-    pizza: false,
+    reading: false,
+    unread: false,
   };
 
-  function handleFilter(e) {
-    let event = e.target.className;
+  let selectedGenre = "";
+  let selectedPublisher = "";
 
-    if (event === "material-symbols-outlined") {
-      event = e.target.parentElement.className;
-    }
+  $: genres = Array.from(
+    new Set(
+      $books
+        .map((b) => (b.genre || "").split(","))
+        .flat()
+        .map((g) => g.trim())
+        .filter(Boolean)
+    )
+  );
 
-    handleActive(event);
+  $: publishers = Array.from(
+    new Set(
+      $books
+        .map((b) => (b.publisher || "").split(","))
+        .flat()
+        .map((p) => p.trim())
+        .filter(Boolean)
+    )
+  );
 
-    const filterMap = {
-      wishlist: "wishlist",
-      library: "lib",
-      read: "read",
-      pizza: "pizza",
-    };
-
-    let selectedBooks = $books;
-
-    for (const [key, status] of Object.entries(filterMap)) {
-      if (event.includes(key) && !event.includes("active")) {
-        selectedBooks = $books.filter((book) => book.status === status);
-        break;
-      }
-    }
-
-    filteredBooks.update(() => selectedBooks);
+  function handleStatusFilter(status) {
+    active[status] = !active[status];
+    Object.keys(active).forEach((k) => {
+      if (k !== status) active[k] = false;
+    });
+    applyFilters();
   }
 
-  function handleActive(event) {
-    for (let key in active) {
-      if (event.includes(key)) {
-        active[key] = !active[key];
-      } else {
-        active[key] = false;
-      }
+  function handleGenreFilter(e) {
+    selectedGenre = e.target.value;
+    applyFilters();
+  }
+
+  function handlePublisherFilter(e) {
+    selectedPublisher = e.target.value;
+    applyFilters();
+  }
+
+  function applyFilters() {
+    let filtered = $books;
+    const status = Object.keys(active).find((k) => active[k]);
+    if (status) {
+      filtered = filtered.filter((b) => b.reading_status === status);
     }
+    if (selectedGenre) {
+      filtered = filtered.filter((b) =>
+        (b.genre || "")
+          .split(",")
+          .map((g) => g.trim())
+          .includes(selectedGenre)
+      );
+    }
+    if (selectedPublisher) {
+      filtered = filtered.filter((b) =>
+        (b.publisher || "")
+          .split(",")
+          .map((p) => p.trim())
+          .includes(selectedPublisher)
+      );
+    }
+    if (selectedPublisher) {
+      filtered = filtered.filter((b) =>
+        (b.publisher || "")
+          .split(",")
+          .map((p) => p.trim())
+          .includes(selectedPublisher)
+      );
+    }
+
+    filteredBooks.set(filtered);
   }
 </script>
 
-<div class="btn rounded-full">
-  <span class="material-symbols-outlined"> filter_alt </span>
-</div>
-
-<div class="join hidden">
+<div class="flex items-center relative">
   <button
     type="button"
-    class={`wishlist filter ${active.wishlist ? "active" : ""}`}
-    on:click={handleFilter}
-    aria-pressed={active.wishlist}
+    class={`btn btn-circle btn-outline ${showFilters ? "btn-active" : ""}`}
+    aria-label="Mostra filtri"
+    on:click={() => (showFilters = !showFilters)}
   >
-    <span class="material-symbols-outlined"> bookmarks </span>
+    <span class="material-symbols-outlined">filter_alt</span>
   </button>
-
-  <button
-    type="button"
-    class={`library filter ${active.library ? "active" : ""}`}
-    on:click={handleFilter}
-    aria-pressed={active.library}
+  <div
+    class="overflow-hidden transition-all duration-200"
+    style="max-width: {showFilters ? '1100px' : '0'};"
   >
-    <span class="material-symbols-outlined"> library_books </span>
-  </button>
-
-  <button
-    type="button"
-    class={`read filter ${active.read ? "active" : ""}`}
-    on:click={handleFilter}
-    aria-pressed={active.read}
-  >
-    <span class="material-symbols-outlined"> done_all </span>
-  </button>
-
-  <button
-    type="button"
-    class={`pizza filter ${active.pizza ? "active" : ""}`}
-    on:click={handleFilter}
-    aria-pressed={active.reading}
-  >
-    <span class="material-symbols-outlined"> menu_book </span>
-  </button>
+    {#if showFilters}
+      <div
+        class="flex flex-row gap-x-3 items-center ml-2 px-2"
+        transition:fly={{ x: -10, duration: 300 }}
+      >
+        <button
+          type="button"
+          class={`btn btn-sm ${active.read ? "btn-success" : "btn-outline"}`}
+          on:click={() => handleStatusFilter("read")}
+          aria-pressed={active.read}
+        >
+          <span class="material-symbols-outlined mr-1">done_all</span> Letti
+        </button>
+        <button
+          type="button"
+          class={`btn btn-sm ${active.reading ? "btn-info" : "btn-outline"}`}
+          on:click={() => handleStatusFilter("reading")}
+          aria-pressed={active.reading}
+        >
+          <span class="material-symbols-outlined mr-1">menu_book</span> In lettura
+        </button>
+        <button
+          type="button"
+          class={`btn btn-sm ${active.unread ? "btn-warning" : "btn-outline"}`}
+          on:click={() => handleStatusFilter("unread")}
+          aria-pressed={active.unread}
+        >
+          <span class="material-symbols-outlined mr-1">book</span> Da leggere
+        </button>
+        <select
+          class="select select-sm"
+          on:change={handleGenreFilter}
+          bind:value={selectedGenre}
+        >
+          <option value="">Tutti i generi</option>
+          {#each genres as genre}
+            <option value={genre}>{genre}</option>
+          {/each}
+        </select>
+        <select
+          class="select select-sm"
+          on:change={handlePublisherFilter}
+          bind:value={selectedPublisher}
+        >
+          <option value="">Tutti gli editori</option>
+          {#each publishers as publisher}
+            <option value={publisher}>{publisher}</option>
+          {/each}
+        </select>
+      </div>
+    {/if}
+  </div>
 </div>

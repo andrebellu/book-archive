@@ -79,6 +79,7 @@
       const savedBook = await res.json();
 
       books.update((existing) => [...existing, savedBook]);
+      filteredBooks.update((existing) => [...existing, savedBook]);
 
       message = "📚 Libro aggiunto con successo!";
       success = true;
@@ -122,6 +123,7 @@
             if (res.ok) {
               const savedBook = await res.json();
               books.update((existing) => [...existing, savedBook]);
+              filteredBooks.update((existing) => [...existing, savedBook]);
               imported++;
             }
           } catch (e) {}
@@ -137,10 +139,7 @@
   }
 </script>
 
-<button
-  class="btn text-lg btn-success hover:bg rounded-full"
-  onclick="my_modal_3.showModal()"
->
+<button class="btn btn-circle btn-success" onclick="my_modal_3.showModal()">
   <span class="material-symbols-outlined"> add </span>
 </button>
 
@@ -153,13 +152,19 @@
     </form>
     <h3 class="font-bold text-lg mb-4">Aggiungi un nuovo libro</h3>
     <div class="tabs tabs-boxed mb-4">
-      <a
+      <button
+        type="button"
         class="tab {tab === 'manuale' ? 'tab-active' : ''}"
-        on:click={() => (tab = "manuale")}>Manuale</a
+        on:click={() => (tab = "manuale")}
+        aria-selected={tab === "manuale"}
+        role="tab">Manuale</button
       >
-      <a
+      <button
+        type="button"
         class="tab {tab === 'csv' ? 'tab-active' : ''}"
-        on:click={() => (tab = "csv")}>Importa CSV</a
+        on:click={() => (tab = "csv")}
+        aria-selected={tab === "csv"}
+        role="tab">Importa CSV</button
       >
     </div>
     {#if tab === "manuale"}
@@ -255,8 +260,9 @@
       </form>
     {:else if tab === "csv"}
       <div class="flex flex-col gap-4">
-        <label class="font-semibold">Importa libri da CSV</label>
+        <label class="font-semibold" for="csvfile">Importa libri da CSV</label>
         <input
+          id="csvfile"
           type="file"
           accept=".csv"
           on:change={handleCSVUpload}

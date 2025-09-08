@@ -1,5 +1,10 @@
-<button class="" onclick="help_modal.showModal()">
-  <span class="material-symbols-outlined text-md"> question_mark </span>
+<button
+  type="button"
+  class="btn btn-circle btn-outline"
+  aria-label="Mostra filtri"
+  onclick="help_modal.showModal()"
+>
+  <span class="material-symbols-outlined">question_mark</span>
 </button>
 <dialog id="help_modal" class="modal modal-bottom sm:modal-middle">
   <div class="modal-box">
@@ -8,54 +13,31 @@
         >✕</button
       >
     </form>
-    <div class="split flex flex-row justify-evenly">
-      <div class="split-1 flex flex-col justify-start">
-        <h2 class="text-md font-bold">Book Legend</h2>
-        <ul class="list-disc">
-          <li class="flex items-center">
-            <span class="border-2 border-green-600 inline-block w-4 h-4 mr-2"
-            ></span>Read
-          </li>
-          <li class="flex items-center">
-            <span class="border-2 border-purple-400 inline-block w-4 h-4 mr-2"
-            ></span>Reading
-          </li>
-          <li class="flex items-center">
-            <span
-              class="border-2 border-yellow-500 border-dashed inline-block w-4 h-4 mr-2"
-            ></span>Library
-          </li>
-          <li class="flex items-center">
-            <span class="border-2 border-blue-400 inline-block w-4 h-4 mr-2"
-            ></span>Wishlist
-          </li>
-        </ul>
-      </div>
-      <div class="split-2">
-        <h2 class="text-md font-bold">Icon Legend</h2>
-        <ul class="list-disc">
-          <li class="flex items-center">
-            <span class="material-symbols-outlined inline-block w-4 h-4 mr-2"
-              >bookmarks</span
-            >Wishlist
-          </li>
-          <li class="flex items-center">
-            <span class="material-symbols-outlined inline-block w-4 h-4 mr-2"
-              >library_books</span
-            >Library
-          </li>
-          <li class="flex items-center">
-            <span class="material-symbols-outlined inline-block w-4 h-4 mr-2"
-              >done_all</span
-            >Read
-          </li>
-          <li class="flex items-center">
-            <span class="material-symbols-outlined inline-block w-4 h-4 mr-2"
-              >menu_book</span
-            >Reading
-          </li>
-        </ul>
-      </div>
+    <h2 class="text-md font-bold mb-4">Aiuto!</h2>
+    <ul class="list-disc space-y-2">
+      <li class="flex items-center">
+        <span
+          class="border-2 border-green-600 inline-block w-4 h-4 mr-2 rounded"
+        ></span>
+        <span>Letto</span>
+      </li>
+      <li class="flex items-center">
+        <span
+          class="border-2 border-purple-400 inline-block w-4 h-4 mr-2 rounded"
+        ></span>
+        <span>In lettura</span>
+      </li>
+      <li class="flex items-center">
+        <span class="border-2 border-gray-300 inline-block w-4 h-4 mr-2 rounded"
+        ></span>
+        <span>Neutro / Non letto</span>
+      </li>
+    </ul>
+    <div class="mt-4 text-sm text-gray-400">
+      Puoi filtrare e cercare i libri usando i controlli in alto.<br />
+      <b>Ricerca rapida:</b> Inizia a scrivere da tastiera.<br />
+      <b>Backspace</b> cancella l'ultima lettera, <b>Esc</b> o <b>Ctrl+K</b> azzerano
+      la ricerca.
     </div>
   </div>
 </dialog>

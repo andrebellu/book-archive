@@ -1,64 +1,110 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import { books, filteredBooks } from "../../../../store";
+  import { fade } from "svelte/transition";
 
-  function handleSearch(e) {
-    let searchedBooks = [];
+  let overlayString = "";
+  let overlayVisible = false;
+  let overlayTimeout;
+  let searchTimeout;
 
-    searchedBooks = $books.filter((book) =>
-      book.title.toLowerCase().includes(e.target.value.toLowerCase())
-    );
+  function normalize(str) {
+    return str
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/[^\w\s]/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
 
+  function fuzzyMatch(title, query) {
+    const normTitle = normalize(title);
+    const normQuery = normalize(query);
+    return normQuery.split(" ").every((q) => normTitle.includes(q));
+  }
+
+  function updateSearch(str) {
+    let searchedBooks = $books.filter((book) => fuzzyMatch(book.title, str));
     filteredBooks.set(searchedBooks);
+  }
+
+  function showOverlay(str) {
+    overlayString = str;
+    overlayVisible = true;
+    clearTimeout(overlayTimeout);
+    overlayTimeout = setTimeout(() => {
+      overlayVisible = false;
+    }, 800);
+  }
+
+  function resetSearch() {
+    overlayString = "";
+    updateSearch("");
+    showOverlay("");
   }
 
   onMount(() => {
     function handleKeydown(e) {
+      if (
+        document.activeElement.tagName === "INPUT" ||
+        document.activeElement.tagName === "TEXTAREA"
+      )
+        return;
       const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
       if (
         (isMac && e.metaKey && e.key === "k") ||
         (!isMac && e.ctrlKey && e.key === "k")
       ) {
         e.preventDefault();
-        openModal();
+        resetSearch();
+        return;
+      }
+      if (e.key === "Escape") {
+        resetSearch();
+        return;
+      }
+      if (e.key === "Backspace") {
+        if (overlayString.length > 0) {
+          overlayString = overlayString.slice(0, -1);
+          showOverlay(overlayString);
+          updateSearch(overlayString);
+        }
+        return;
+      }
+      if (
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey &&
+        !e.repeat &&
+        e.key.length === 1
+      ) {
+        overlayString += e.key;
+        showOverlay(overlayString);
+        updateSearch(overlayString);
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          overlayString = "";
+          showOverlay("");
+          updateSearch("");
+        }, 20000);
       }
     }
-
     window.addEventListener("keydown", handleKeydown);
-
     return () => {
       window.removeEventListener("keydown", handleKeydown);
     };
   });
-
-  function openModal() {
-    document.getElementById("my_modal_2").showModal();
-  }
 </script>
 
-<button class="" onclick="my_modal_2.showModal()">
-  <span class="material-symbols-outlined"> search </span>
-</button>
-<dialog id="my_modal_2" class="modal modal-bottom sm:modal-middle">
+{#if overlayVisible && overlayString}
   <div
-    class="modal-box flex flex-row items-center content-center p-4 gap-x-2 glass bg-opacity-75"
+    class="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
+    transition:fade={{ duration: 200 }}
   >
-    <span class="material-symbols-outlined text-gray-300"> search </span>
-    <input
-      type="text"
-      class="w-full h-full focus:outline-none bg-transparent"
-      on:input={handleSearch}
-      placeholder="Search for a book"
-    />
-    <!-- <form method="dialog">
-            <button
-                class="hover:scale-125 ease-in-out duration-150 text-gray-300"
-            >
-                X</button
-            >
-        </form> -->
+    <span
+      class="text-8xl font-bold text-white drop-shadow-lg bg-black bg-opacity-60 px-10 py-4 rounded-xl"
+      >{overlayString}</span
+    >
   </div>
-  <form method="dialog" class="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog>
+{/if}
