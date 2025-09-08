@@ -8,7 +8,8 @@ async function createPool() {
         host: process.env.DB_HOST_LOCAL,
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME
+        database: process.env.DB_NAME,
+        charset: 'utf8mb4'
     };
 
     console.log('[DB] Config:', localConfig);

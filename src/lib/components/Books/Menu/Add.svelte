@@ -70,7 +70,7 @@
     try {
       const res = await fetch("/api/books/add", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify(newBook),
       });
 
@@ -100,6 +100,7 @@
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
+      encoding: "UTF-8",
       complete: async function (results) {
         let imported = 0;
         for (const row of results.data) {

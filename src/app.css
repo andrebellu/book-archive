@@ -18,12 +18,12 @@ html {
   margin: 0;
 }
 
-body.no-scroll {
+html.no-scroll {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
 
-body.no-scroll::-webkit-scrollbar {
+html.no-scroll::-webkit-scrollbar {
   display: none; /* Chrome, Safari, and Opera */
 }
 

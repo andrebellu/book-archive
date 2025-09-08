@@ -35,8 +35,10 @@
   $: $books = $books;
 </script>
 
-<body class="flex flex-col items-center min-h-screen">
-  <div class="w-full max-w-screen-xl p-6 flex flex-col gap-4">
+<div
+  class="min-h-screen flex flex-col items-center justify-start relative overflow-hidden"
+>
+  <div class="w-full max-w-screen-xl p-6 flex flex-col gap-4 z-10">
     <Menu />
 
     {#if list}
@@ -56,9 +58,9 @@
     {/if}
 
     {#if $filteredBooks.length === 0}
-      <h1 class="text-xl text-gray-600 text-center mt-10">
+      <h1 class="text-xl text-gray-200 text-center mt-10">
         📚 Nessun libro trovato!
       </h1>
     {/if}
   </div>
-</body>
+</div>
