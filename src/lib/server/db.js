@@ -17,7 +17,7 @@ async function createPool() {
     try {
         console.log('[DB] Tentativo connessione a', localConfig.host, localConfig.database, localConfig.user);
         const pool = mysql.createPool(localConfig);
-        await pool.query('SELECT 1'); // Test connection
+        await pool.query('SELECT 1');
         console.log('[DB] Connesso con successo');
         return pool;
     } catch (err) {

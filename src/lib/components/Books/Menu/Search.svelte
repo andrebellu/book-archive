@@ -1,7 +1,14 @@
 <script>
   import { onMount, tick } from "svelte";
-  import { books, filteredBooks } from "../../../../store";
+  import {
+    books,
+    filteredBooks,
+    series,
+    filteredSeries,
+  } from "../../../../store";
   import { fade } from "svelte/transition";
+
+  export let mode = "books"; // 'books' | 'series'
 
   let overlayString = "";
   let overlayVisible = false;
@@ -24,9 +31,24 @@
     return normQuery.split(" ").every((q) => normTitle.includes(q));
   }
 
+  import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
+
   function updateSearch(str) {
-    let searchedBooks = $books.filter((book) => fuzzyMatch(book.title, str));
-    filteredBooks.set(searchedBooks);
+    if (mode === "books") {
+      // Server-side filtering via URL
+      const url = new URL($page.url);
+      if (str) {
+        url.searchParams.set("search", str);
+      } else {
+        url.searchParams.delete("search");
+      }
+      goto(url, { keepFocus: true, noScroll: true, replaceState: false });
+    } else if (mode === "series") {
+      // Keep existing client-side logic for series until migrated
+      let searchedSeries = $series.filter((s) => fuzzyMatch(s.titolo, str));
+      filteredSeries.set(searchedSeries);
+    }
   }
 
   function showOverlay(str) {

@@ -4,4 +4,7 @@ export let authors = writable([]);
 export let books = writable([]);
 export let filteredBooks = writable([]);
 
+export let series = writable([]);
+export let filteredSeries = writable([]);
+
 export let list = writable();
